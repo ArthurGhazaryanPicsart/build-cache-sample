@@ -1,0 +1,40 @@
+pluginManagement {
+    apply from: "build-logic-settings/dependency-plugin/pluginManagement-shared.settings.gradle.kts"
+    includeBuild("build-logic-settings")
+}
+
+plugins {
+    id "com.gradle.enterprise" version "3.12"
+    id "com.gradle.common-custom-user-data-gradle-plugin" version "1.8.1"
+    id("convention-dependencies")
+}
+
+buildCache {
+    local {
+        enabled = true
+        push = true
+        removeUnusedEntriesAfterDays = 4
+    }
+    remote(gradleEnterprise.buildCache) {
+        server = "https://gradle.com"
+        path = "/cache/"
+        push = false
+        enabled = false
+        allowUntrustedServer = true
+    }
+}
+
+gradleEnterprise {
+    server = "https://gradle.com"
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+        uploadInBackground = true
+        capture { taskInputFiles = true}
+        publishAlways()
+        publishIfAuthenticated()
+    }
+}
+
+rootProject.name = "Buiild cache sample"
+include ':app'
